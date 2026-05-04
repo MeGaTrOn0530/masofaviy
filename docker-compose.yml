@@ -1,0 +1,51 @@
+version: '3.9'
+
+services:
+  mysql:
+    image: mysql:8.4
+    container_name: meeting-mysql
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: meeting_service
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+
+  backend:
+    build:
+      context: ./backend
+    container_name: meeting-backend
+    restart: unless-stopped
+    depends_on:
+      - mysql
+    environment:
+      NODE_ENV: production
+      PORT: 4000
+      DATABASE_URL: mysql://root:root@mysql:3306/meeting_service
+      JWT_SECRET: change-me-access-secret
+      JOIN_TOKEN_SECRET: change-me-join-secret
+      MAIN_BACKEND_MODE: mock
+      MAIN_BACKEND_URL: http://host.docker.internal:3000
+      MAIN_BACKEND_SERVICE_KEY: meeting-service-key
+      DEV_AUTH_ENABLED: "true"
+      CORS_ORIGINS: http://localhost:5173,http://localhost:8080
+      MEDIASOUP_ANNOUNCED_IP: 127.0.0.1
+    ports:
+      - "4000:4000"
+      - "40000-49999:40000-49999/udp"
+      - "40000-49999:40000-49999/tcp"
+
+  frontend:
+    build:
+      context: ./frontend
+    container_name: meeting-frontend
+    restart: unless-stopped
+    depends_on:
+      - backend
+    ports:
+      - "8080:80"
+
+volumes:
+  mysql_data:

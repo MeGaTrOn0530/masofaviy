@@ -1,0 +1,621 @@
+MEETING BACKEND UCHUN TO‘LIQ TASK VA CURSOR AI PROMPT
+
+============================================================
+1. UMUMIY MAQSAD
+============================================================
+
+Men masofaviy ta’lim platformasi uchun alohida Meeting Backend service yozmoqchiman.
+
+MUHIM:
+- Jitsi, Zoom SDK, BigBlueButton ishlatilmasin.
+- Meeting 0 dan WebRTC asosida qurilsin.
+- WebRTC SFU uchun mediasoup ishlatilsin.
+- Backend oddiy Node.js + Express + Socket.IO + mediasoup bilan yozilsin.
+- TypeScript ishlatilmasin.
+- Hamma backend fayllar .js formatda bo‘lsin.
+- Database MySQL bo‘lsin.
+- ORM sifatida Prisma ishlatilsin.
+- JWT authentication bo‘lsin.
+- Bu backend alohida microservice bo‘ladi va asosiy backend bilan REST API orqali bog‘lanadi.
+
+============================================================
+2. PLATFORMADAGI ROLLAR
+============================================================
+
+Rollar:
+- Admin
+- Teacher / Domla
+- Student / Talaba
+
+Domla:
+- o‘z profilidan meeting yaratadi
+- meeting kuni va vaqtini belgilaydi
+- bir yoki bir nechta guruhni tanlaydi
+- meeting mavzusini yozadi
+- meeting davomiyligini belgilaydi
+- kameraga ruxsat berish/bermaslikni belgilaydi
+- mikrofonga ruxsat berish/bermaslikni belgilaydi
+- screen sharing ruxsatini belgilaydi
+- umumiy chatni yoqish/o‘chirish imkoniga ega bo‘ladi
+
+Talaba:
+- faqat o‘ziga biriktirilgan guruh meetinglarini ko‘radi
+- meeting kuni va vaqti kelganda “Meetingga kirish” tugmasini ko‘radi
+- meetingga o‘z profilidagi ism familiya orqali kiradi
+- boshqa guruhdagi meetingga kira olmaydi
+- meeting linki bo‘lsa ham ruxsatsiz kira olmaydi
+
+============================================================
+3. MEETING ICHIDAGI FUNKSIYALAR
+============================================================
+
+Meeting ichida:
+- 30 tagacha talaba qatnashadi
+- 3 tagacha domla qatnashadi
+- umumiy 33 ta user bitta roomda qatnashishi mumkin
+- kamera yoqish
+- mikrofon yoqish
+- domla ruxsat bersa screen sharing
+- room ichida umumiy chat
+- faqat shu roomdagi odamlar chatni ko‘radi
+- boshqa odamlar roomga kira olmaydi
+- domla userlarni mute qilishi mumkin
+- domla userni meetingdan chiqarishi mumkin
+- domla meetingni boshlashi mumkin
+- domla meetingni yakunlashi mumkin
+
+============================================================
+4. DAVOMAT TALABLARI
+============================================================
+
+Davomat:
+- talaba meetingga kirganda attendance avtomatik yozilsin
+- kirgan vaqti saqlansin
+- chiqqan vaqti saqlansin
+- umumiy qatnashgan minut hisoblanadi
+- qayta kirsa sessionlar alohida yoziladi
+- yakunda umumiy davomati hisoblanadi
+- attendance ma’lumoti asosiy backend API’siga yuborilishi kerak
+- agar asosiy backend ishlamasa, meeting backend ichida queue qilib saqlab, keyin qayta yuborsin
+
+============================================================
+5. ASOSIY BACKEND BILAN INTEGRATSIYA
+============================================================
+
+Meeting backend asosiy backenddan quyidagilarni oladi:
+- user ma’lumoti
+- role: teacher, student, admin
+- student group_id
+- teacher assigned group ids
+- JWT tokenni verify qilish
+
+Meeting backend asosiy backendga quyidagilarni yuboradi:
+- attendance data
+- meeting started event
+- meeting ended event
+- participant joined
+- participant left
+
+Asosiy backendda quyidagi API lar bo‘lishi kerak:
+
+GET /api/users/me
+GET /api/teachers/:id/groups
+GET /api/students/:id/group
+POST /api/attendance/meeting
+
+============================================================
+6. REST API LAR
+============================================================
+
+1. POST /api/meetings
+
+Domla meeting yaratadi.
+
+Body:
+{
+  "title": "string",
+  "description": "string",
+  "startTime": "datetime",
+  "endTime": "datetime",
+  "groupIds": [1,2],
+  "settings": {
+    "allowCamera": true,
+    "allowMicrophone": true,
+    "allowScreenShare": false,
+    "allowChat": true
+  }
+}
+
+2. GET /api/meetings/my
+
+Login qilgan user uchun meetinglar ro‘yxati.
+
+Teacher bo‘lsa:
+- o‘zi yaratgan meetinglar chiqadi
+
+Student bo‘lsa:
+- o‘z guruhiga tegishli meetinglar chiqadi
+
+3. GET /api/meetings/:id
+
+Meeting details.
+
+4. POST /api/meetings/:id/start
+
+Faqat teacher yoki admin meetingni boshlaydi.
+
+5. POST /api/meetings/:id/end
+
+Faqat teacher yoki admin meetingni yakunlaydi.
+
+6. POST /api/meetings/:id/join-token
+
+Meetingga kirish uchun maxsus qisqa muddatli join token beradi.
+
+Token ichida:
+- meetingId
+- userId
+- role
+- fullName
+- groupId
+- permissions
+
+7. GET /api/meetings/:id/attendance
+
+Meeting attendance ro‘yxati.
+
+8. POST /api/internal/attendance/sync
+
+Asosiy backenddan chaqirish mumkin bo‘lgan sync endpoint.
+
+============================================================
+7. SOCKET.IO EVENTLAR
+============================================================
+
+Client -> Server:
+
+- meeting:join
+- meeting:leave
+- media:getRouterRtpCapabilities
+- media:createWebRtcTransport
+- media:connectTransport
+- media:produce
+- media:consume
+- media:resumeConsumer
+- chat:send
+- teacher:muteUser
+- teacher:removeUser
+- teacher:allowScreenShare
+- teacher:disableCamera
+- teacher:disableMicrophone
+
+Server -> Client:
+
+- meeting:joined
+- meeting:left
+- participant:joined
+- participant:left
+- media:newProducer
+- media:producerClosed
+- chat:newMessage
+- teacher:userMuted
+- teacher:userRemoved
+- meeting:ended
+- error
+
+============================================================
+8. DATABASE MODELLAR
+============================================================
+
+Prisma schema quyidagilar bilan yozilsin:
+
+UserSnapshot:
+- id
+- externalUserId
+- fullName
+- role
+- groupId
+- createdAt
+
+Meeting:
+- id
+- title
+- description
+- createdByUserId
+- startTime
+- endTime
+- status: scheduled, live, ended, cancelled
+- allowCamera
+- allowMicrophone
+- allowScreenShare
+- allowChat
+- createdAt
+- updatedAt
+
+MeetingGroup:
+- id
+- meetingId
+- groupId
+
+MeetingParticipant:
+- id
+- meetingId
+- userId
+- role
+- fullName
+- groupId
+- joinedAt
+- leftAt
+- totalSeconds
+- status
+
+Attendance:
+- id
+- meetingId
+- userId
+- groupId
+- fullName
+- firstJoinedAt
+- lastLeftAt
+- totalSeconds
+- isPresent
+- syncedToMainBackend
+- createdAt
+- updatedAt
+
+ChatMessage:
+- id
+- meetingId
+- userId
+- fullName
+- message
+- createdAt
+
+AttendanceSyncQueue:
+- id
+- meetingId
+- payload
+- status: pending, success, failed
+- retryCount
+- lastError
+- createdAt
+- updatedAt
+
+============================================================
+9. XAVFSIZLIK TALABLARI
+============================================================
+
+- Har bir endpoint JWT bilan himoyalansin
+- Meetingga faqat assigned user kira olsin
+- Student boshqa guruh meetingiga kira olmasin
+- Teacher faqat o‘ziga biriktirilgan guruhga meeting yarata olsin
+- Socket join-token bo‘lmasa ulanmasin
+- Join token muddati 5 minut bo‘lsin
+- Rate limit qo‘yilsin
+- CORS sozlansin
+- Helmet ishlatilsin
+- Input validation Zod bilan bo‘lsin
+
+============================================================
+10. MEDIASOUP TALABLARI
+============================================================
+
+- mediasoup worker yaratiladi
+- har bir meeting uchun room yaratiladi
+- room ichida router bo‘ladi
+- participant transport, producer, consumer obyektlari boshqariladi
+- camera, microphone, screen share alohida producer sifatida yuritiladi
+- user disconnect bo‘lsa producer/consumerlar tozalanadi
+- meeting tugasa room memorydan tozalanadi
+
+============================================================
+11. FOLDER STRUCTURE NODE.JS JAVASCRIPT
+============================================================
+
+src/
+  app.js
+  server.js
+  config/
+    env.js
+    cors.js
+    mediasoup.js
+  database/
+    prisma.js
+  modules/
+    auth/
+      auth.middleware.js
+      token.service.js
+    meetings/
+      meeting.routes.js
+      meeting.controller.js
+      meeting.service.js
+      meeting.validation.js
+    attendance/
+      attendance.service.js
+      attendance-sync.service.js
+      attendance.routes.js
+    sockets/
+      socket.server.js
+      socket.auth.js
+      meeting.socket.js
+    media/
+      mediasoup.service.js
+      room.manager.js
+      room.js
+      participant.js
+    chat/
+      chat.service.js
+  integrations/
+    main-backend.client.js
+  middlewares/
+    error.middleware.js
+    validate.middleware.js
+    rate-limit.middleware.js
+  utils/
+    logger.js
+    ApiError.js
+
+============================================================
+12. KERAKLI NATIJA
+============================================================
+
+Menga to‘liq backend kodini yozib ber:
+
+- package.json
+- .env.example
+- prisma/schema.prisma
+- src ichidagi barcha .js fayllar
+- Dockerfile
+- docker-compose.yml
+- README.md
+- API documentation
+- Socket.IO event documentation
+- mediasoup ishlash oqimi
+- local ishga tushirish komandasi
+- production deploy PM2 va Nginx config namunasi
+
+MUHIM:
+- tsconfig.json kerak emas
+- TypeScript type/interface ishlatilmasin
+- hamma kod oddiy JavaScriptda yozilsin
+- package.json ichida "type": "module" bo‘lsin
+- import/export ES Module formatda bo‘lsin
+- npm run dev nodemon src/server.js ni ishga tushirsin
+- npm start node src/server.js ni ishga tushirsin
+
+Kod productionga yaqin, toza, modulga bo‘lingan bo‘lsin.
+Har bir muhim joyda comment bo‘lsin.
+
+============================================================
+13. PACKAGE.JSON TALABI
+============================================================
+
+package.json quyidagiga o‘xshash bo‘lsin:
+
+{
+  "type": "module",
+  "scripts": {
+    "dev": "nodemon src/server.js",
+    "start": "node src/server.js",
+    "prisma:generate": "prisma generate",
+    "prisma:migrate": "prisma migrate dev"
+  }
+}
+
+============================================================
+14. CURSOR AI UCHUN YAKUNIY PROMPT
+============================================================
+
+Men masofaviy ta’lim platformasi uchun alohida Meeting Backend service yozmoqchiman.
+
+MUHIM:
+- Jitsi, Zoom SDK, BigBlueButton ishlatilmasin.
+- Meeting 0 dan WebRTC asosida qurilsin.
+- WebRTC SFU uchun mediasoup ishlatilsin.
+- Backend oddiy Node.js + Express + Socket.IO + mediasoup bilan yozilsin.
+- TypeScript ishlatilmasin.
+- Hamma fayllar .js bo‘lsin.
+- Database MySQL bo‘lsin.
+- ORM sifatida Prisma ishlatilsin.
+- JWT authentication bo‘lsin.
+- Bu backend alohida microservice bo‘ladi va asosiy backend bilan REST API orqali bog‘lanadi.
+
+LOYIHA MAQSADI:
+Platformada domlalar o‘z profilidan meeting yaratadi.
+Domla meeting kuni va vaqtini belgilaydi, bir yoki bir nechta guruhni tanlaydi, meeting mavzusini yozadi, meeting davomiyligini belgilaydi, kamera, mikrofon, screen sharing va chat permissionlarini sozlaydi.
+
+Talabalar faqat o‘ziga biriktirilgan guruh meetinglarini ko‘radi.
+Meeting kuni va vaqti kelganda “Meetingga kirish” tugmasini ko‘radi.
+Meetingga o‘z profilidagi ism familiya orqali kiradi.
+Boshqa guruhdagi meetingga kira olmaydi.
+Meeting linki bo‘lsa ham ruxsatsiz kira olmaydi.
+
+Meeting ichida 30 tagacha talaba, 3 tagacha domla, umumiy 33 ta user bo‘lishi mumkin.
+Meetingda kamera, mikrofon, screen share, umumiy chat, teacher control panel bo‘lsin.
+Domla userlarni mute qilishi, chiqarishi, screen sharega ruxsat berishi, meetingni boshlashi va yakunlashi mumkin.
+
+Davomat avtomatik olinadi:
+- joinedAt
+- leftAt
+- totalSeconds
+- qayta kirish sessionlari
+- umumiy qatnashgan vaqt
+- asosiy backendga sync qilish
+- asosiy backend ishlamasa queue qilib keyin yuborish
+
+Quyidagi REST API larni yoz:
+- POST /api/meetings
+- GET /api/meetings/my
+- GET /api/meetings/:id
+- POST /api/meetings/:id/start
+- POST /api/meetings/:id/end
+- POST /api/meetings/:id/join-token
+- GET /api/meetings/:id/attendance
+- POST /api/internal/attendance/sync
+
+Socket.IO eventlar:
+Client -> Server:
+- meeting:join
+- meeting:leave
+- media:getRouterRtpCapabilities
+- media:createWebRtcTransport
+- media:connectTransport
+- media:produce
+- media:consume
+- media:resumeConsumer
+- chat:send
+- teacher:muteUser
+- teacher:removeUser
+- teacher:allowScreenShare
+- teacher:disableCamera
+- teacher:disableMicrophone
+
+Server -> Client:
+- meeting:joined
+- meeting:left
+- participant:joined
+- participant:left
+- media:newProducer
+- media:producerClosed
+- chat:newMessage
+- teacher:userMuted
+- teacher:userRemoved
+- meeting:ended
+- error
+
+Database Prisma modellar:
+- UserSnapshot
+- Meeting
+- MeetingGroup
+- MeetingParticipant
+- Attendance
+- ChatMessage
+- AttendanceSyncQueue
+
+Xavfsizlik:
+- JWT auth
+- join token 5 minutlik
+- role based access
+- group based access
+- teacher faqat o‘z guruhlariga meeting yarata oladi
+- student faqat o‘z guruhidagi meetingga kira oladi
+- Helmet, CORS, Rate limit, Zod validation
+
+Mediasoup:
+- worker
+- router
+- transport
+- producer
+- consumer
+- room manager
+- participant manager
+- camera/microphone/screen share producer
+- disconnect cleanup
+- meeting ended cleanup
+
+Folder structure:
+
+src/
+  app.js
+  server.js
+  config/
+    env.js
+    cors.js
+    mediasoup.js
+  database/
+    prisma.js
+  modules/
+    auth/
+      auth.middleware.js
+      token.service.js
+    meetings/
+      meeting.routes.js
+      meeting.controller.js
+      meeting.service.js
+      meeting.validation.js
+    attendance/
+      attendance.service.js
+      attendance-sync.service.js
+      attendance.routes.js
+    sockets/
+      socket.server.js
+      socket.auth.js
+      meeting.socket.js
+    media/
+      mediasoup.service.js
+      room.manager.js
+      room.js
+      participant.js
+    chat/
+      chat.service.js
+  integrations/
+    main-backend.client.js
+  middlewares/
+    error.middleware.js
+    validate.middleware.js
+    rate-limit.middleware.js
+  utils/
+    logger.js
+    ApiError.js
+
+Menga quyidagilarni to‘liq yozib ber:
+- package.json
+- .env.example
+- prisma/schema.prisma
+- src ichidagi barcha .js fayllar
+- Dockerfile
+- docker-compose.yml
+- README.md
+- API documentation
+- Socket.IO documentation
+- mediasoup ishlash oqimi
+- local run command
+- PM2 deploy command
+- Nginx config
+
+Kod oddiy Node.js JavaScriptda yozilsin.
+TypeScript ishlatilmasin.
+.ts fayllar bo‘lmasin.
+tsconfig.json kerak emas.
+package.json ichida "type": "module" bo‘lsin.
+import/export ES Module formatda yozilsin.
+
+============================================================
+15. QISQA ARXITEKTURA
+============================================================
+
+Main Backend:
+- user
+- role
+- group
+- lesson
+- attendance storage
+
+Meeting Backend:
+- WebRTC
+- Socket.IO
+- mediasoup
+- room
+- chat
+- live attendance
+
+Ikkalasi REST API orqali bog‘lanadi.
+
+============================================================
+16. FRONTENDDA KERAK BO‘LADIGAN TUGMALAR
+============================================================
+
+Meeting page:
+- Camera button
+- Microphone button
+- Screen share button
+- Chat panel
+- Participants list
+- Leave button
+- Teacher control panel
+
+Teacher control:
+- Mute student
+- Remove student
+- Allow screen share
+- End meeting

@@ -1,0 +1,140 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+enum UserRole {
+  admin
+  teacher
+  student
+}
+
+enum MeetingStatus {
+  scheduled
+  live
+  ended
+  cancelled
+}
+
+enum ParticipantStatus {
+  active
+  left
+  removed
+  disconnected
+}
+
+enum SyncStatus {
+  pending
+  success
+  failed
+}
+
+model UserSnapshot {
+  id             Int      @id @default(autoincrement())
+  externalUserId Int      @unique
+  fullName       String
+  role           UserRole
+  groupId        Int?
+  createdAt      DateTime @default(now())
+}
+
+model Meeting {
+  id                 Int                  @id @default(autoincrement())
+  title              String
+  description        String?              @db.Text
+  createdByUserId    Int
+  startTime          DateTime
+  endTime            DateTime
+  status             MeetingStatus        @default(scheduled)
+  allowCamera        Boolean              @default(true)
+  allowMicrophone    Boolean              @default(true)
+  allowScreenShare   Boolean              @default(false)
+  allowChat          Boolean              @default(true)
+  createdAt          DateTime             @default(now())
+  updatedAt          DateTime             @updatedAt
+  groups             MeetingGroup[]
+  participants       MeetingParticipant[]
+  attendanceRecords  Attendance[]
+  chatMessages       ChatMessage[]
+  attendanceSyncJobs AttendanceSyncQueue[]
+
+  @@index([createdByUserId])
+  @@index([status])
+  @@index([startTime, endTime])
+}
+
+model MeetingGroup {
+  id        Int      @id @default(autoincrement())
+  meetingId Int
+  groupId   Int
+  meeting   Meeting  @relation(fields: [meetingId], references: [id], onDelete: Cascade)
+
+  @@unique([meetingId, groupId])
+  @@index([groupId])
+}
+
+model MeetingParticipant {
+  id           Int               @id @default(autoincrement())
+  meetingId    Int
+  userId       Int
+  role         UserRole
+  fullName     String
+  groupId      Int?
+  joinedAt     DateTime          @default(now())
+  leftAt       DateTime?
+  totalSeconds Int               @default(0)
+  status       ParticipantStatus @default(active)
+  meeting      Meeting           @relation(fields: [meetingId], references: [id], onDelete: Cascade)
+
+  @@index([meetingId, userId])
+  @@index([status])
+}
+
+model Attendance {
+  id                  Int      @id @default(autoincrement())
+  meetingId           Int
+  userId              Int
+  groupId             Int?
+  fullName            String
+  firstJoinedAt       DateTime?
+  lastLeftAt          DateTime?
+  totalSeconds        Int      @default(0)
+  isPresent           Boolean  @default(false)
+  syncedToMainBackend Boolean  @default(false)
+  createdAt           DateTime @default(now())
+  updatedAt           DateTime @updatedAt
+  meeting             Meeting  @relation(fields: [meetingId], references: [id], onDelete: Cascade)
+
+  @@unique([meetingId, userId])
+  @@index([meetingId])
+}
+
+model ChatMessage {
+  id        Int      @id @default(autoincrement())
+  meetingId Int
+  userId    Int
+  fullName  String
+  message   String   @db.Text
+  createdAt DateTime @default(now())
+  meeting   Meeting  @relation(fields: [meetingId], references: [id], onDelete: Cascade)
+
+  @@index([meetingId, createdAt])
+}
+
+model AttendanceSyncQueue {
+  id         Int        @id @default(autoincrement())
+  meetingId  Int
+  payload    Json
+  status     SyncStatus @default(pending)
+  retryCount Int        @default(0)
+  lastError  String?    @db.Text
+  createdAt  DateTime   @default(now())
+  updatedAt  DateTime   @updatedAt
+  meeting    Meeting    @relation(fields: [meetingId], references: [id], onDelete: Cascade)
+
+  @@index([status, retryCount])
+}

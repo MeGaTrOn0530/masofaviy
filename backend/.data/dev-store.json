@@ -1,0 +1,413 @@
+{
+  "counters": {
+    "userSnapshot": 5,
+    "meeting": 3,
+    "meetingGroup": 3,
+    "meetingParticipant": 11,
+    "attendance": 5,
+    "chatMessage": 11,
+    "attendanceSyncQueue": 0
+  },
+  "userSnapshots": [
+    {
+      "id": 1,
+      "createdAt": "2026-05-04T09:54:36.922Z",
+      "externalUserId": 1,
+      "fullName": "Demo Teacher One",
+      "role": "teacher",
+      "groupId": null
+    },
+    {
+      "id": 2,
+      "createdAt": "2026-05-04T09:54:36.933Z",
+      "externalUserId": 1011,
+      "fullName": "Ali Talaba",
+      "role": "student",
+      "groupId": 101
+    },
+    {
+      "id": 3,
+      "createdAt": "2026-05-04T09:55:54.474Z",
+      "externalUserId": 2,
+      "fullName": "Demo Teacher Two",
+      "role": "teacher",
+      "groupId": null
+    },
+    {
+      "id": 4,
+      "createdAt": "2026-05-04T09:58:25.115Z",
+      "externalUserId": 3,
+      "fullName": "Demo Admin",
+      "role": "admin",
+      "groupId": null
+    },
+    {
+      "id": 5,
+      "createdAt": "2026-05-04T10:20:43.580Z",
+      "externalUserId": 1012,
+      "fullName": "Vali Talaba",
+      "role": "student",
+      "groupId": 101
+    }
+  ],
+  "meetings": [
+    {
+      "id": 1,
+      "title": "Test meeting",
+      "description": "demo",
+      "createdByUserId": 1,
+      "startTime": "2026-05-04T15:00:00.000Z",
+      "endTime": "2026-05-04T16:00:00.000Z",
+      "status": "live",
+      "allowCamera": true,
+      "allowMicrophone": true,
+      "allowScreenShare": false,
+      "allowChat": true,
+      "createdAt": "2026-05-04T09:54:36.924Z",
+      "updatedAt": "2026-05-04T10:12:31.072Z"
+    },
+    {
+      "id": 2,
+      "title": "asda",
+      "description": "asfasf",
+      "createdByUserId": 3,
+      "startTime": "2026-05-04T09:59:00.000Z",
+      "endTime": "2026-05-04T10:00:00.000Z",
+      "status": "ended",
+      "allowCamera": true,
+      "allowMicrophone": true,
+      "allowScreenShare": true,
+      "allowChat": true,
+      "createdAt": "2026-05-04T09:58:45.460Z",
+      "updatedAt": "2026-05-04T10:08:02.864Z"
+    },
+    {
+      "id": 3,
+      "title": "123456",
+      "description": "123456",
+      "createdByUserId": 3,
+      "startTime": "2026-05-04T10:08:00.000Z",
+      "endTime": "2026-05-04T10:09:00.000Z",
+      "status": "ended",
+      "allowCamera": true,
+      "allowMicrophone": true,
+      "allowScreenShare": true,
+      "allowChat": true,
+      "createdAt": "2026-05-04T10:07:56.290Z",
+      "updatedAt": "2026-05-04T10:12:27.638Z"
+    }
+  ],
+  "meetingGroups": [
+    {
+      "id": 1,
+      "meetingId": 1,
+      "groupId": 101
+    },
+    {
+      "id": 2,
+      "meetingId": 2,
+      "groupId": 101
+    },
+    {
+      "id": 3,
+      "meetingId": 3,
+      "groupId": 101
+    }
+  ],
+  "meetingParticipants": [
+    {
+      "id": 1,
+      "joinedAt": "2026-05-04T10:01:19.464Z",
+      "leftAt": "2026-05-04T10:01:19.467Z",
+      "totalSeconds": 1,
+      "status": "disconnected",
+      "meetingId": 2,
+      "userId": 1011,
+      "role": "student",
+      "fullName": "Ali Talaba",
+      "groupId": 101
+    },
+    {
+      "id": 2,
+      "joinedAt": "2026-05-04T10:01:40.134Z",
+      "leftAt": "2026-05-04T10:01:40.140Z",
+      "totalSeconds": 1,
+      "status": "disconnected",
+      "meetingId": 2,
+      "userId": 1011,
+      "role": "student",
+      "fullName": "Ali Talaba",
+      "groupId": 101
+    },
+    {
+      "id": 3,
+      "joinedAt": "2026-05-04T10:16:27.203Z",
+      "leftAt": null,
+      "totalSeconds": 0,
+      "status": "active",
+      "meetingId": 1,
+      "userId": 1,
+      "role": "teacher",
+      "fullName": "Demo Teacher One",
+      "groupId": null
+    },
+    {
+      "id": 4,
+      "joinedAt": "2026-05-04T10:17:30.827Z",
+      "leftAt": "2026-05-04T10:17:40.890Z",
+      "totalSeconds": 10,
+      "status": "disconnected",
+      "meetingId": 1,
+      "userId": 1,
+      "role": "teacher",
+      "fullName": "Demo Teacher One",
+      "groupId": null
+    },
+    {
+      "id": 5,
+      "joinedAt": "2026-05-04T10:17:44.436Z",
+      "leftAt": "2026-05-04T10:20:16.772Z",
+      "totalSeconds": 152,
+      "status": "removed",
+      "meetingId": 1,
+      "userId": 1011,
+      "role": "student",
+      "fullName": "Ali Talaba",
+      "groupId": 101
+    },
+    {
+      "id": 6,
+      "joinedAt": "2026-05-04T10:17:47.622Z",
+      "leftAt": null,
+      "totalSeconds": 0,
+      "status": "active",
+      "meetingId": 1,
+      "userId": 3,
+      "role": "admin",
+      "fullName": "Demo Admin",
+      "groupId": null
+    },
+    {
+      "id": 7,
+      "joinedAt": "2026-05-04T10:20:23.643Z",
+      "leftAt": "2026-05-04T10:21:32.207Z",
+      "totalSeconds": 68,
+      "status": "disconnected",
+      "meetingId": 1,
+      "userId": 1011,
+      "role": "student",
+      "fullName": "Ali Talaba",
+      "groupId": 101
+    },
+    {
+      "id": 8,
+      "joinedAt": "2026-05-04T10:20:44.637Z",
+      "leftAt": null,
+      "totalSeconds": 0,
+      "status": "active",
+      "meetingId": 1,
+      "userId": 1012,
+      "role": "student",
+      "fullName": "Vali Talaba",
+      "groupId": 101
+    },
+    {
+      "id": 9,
+      "joinedAt": "2026-05-04T10:21:34.153Z",
+      "leftAt": null,
+      "totalSeconds": 0,
+      "status": "active",
+      "meetingId": 1,
+      "userId": 1011,
+      "role": "student",
+      "fullName": "Ali Talaba",
+      "groupId": 101
+    },
+    {
+      "id": 10,
+      "joinedAt": "2026-05-04T10:26:27.752Z",
+      "leftAt": "2026-05-04T10:27:13.542Z",
+      "totalSeconds": 45,
+      "status": "disconnected",
+      "meetingId": 1,
+      "userId": 3,
+      "role": "admin",
+      "fullName": "Demo Admin",
+      "groupId": null
+    },
+    {
+      "id": 11,
+      "joinedAt": "2026-05-04T10:26:31.428Z",
+      "leftAt": "2026-05-04T10:27:06.739Z",
+      "totalSeconds": 35,
+      "status": "left",
+      "meetingId": 1,
+      "userId": 1011,
+      "role": "student",
+      "fullName": "Ali Talaba",
+      "groupId": 101
+    }
+  ],
+  "attendance": [
+    {
+      "id": 1,
+      "totalSeconds": 2,
+      "isPresent": true,
+      "syncedToMainBackend": true,
+      "createdAt": "2026-05-04T10:01:19.465Z",
+      "updatedAt": "2026-05-04T10:01:40.141Z",
+      "meetingId": 2,
+      "userId": 1011,
+      "groupId": 101,
+      "fullName": "Ali Talaba",
+      "firstJoinedAt": "2026-05-04T10:01:19.464Z",
+      "lastLeftAt": "2026-05-04T10:01:40.140Z"
+    },
+    {
+      "id": 2,
+      "totalSeconds": 10,
+      "isPresent": true,
+      "syncedToMainBackend": true,
+      "createdAt": "2026-05-04T10:16:27.204Z",
+      "updatedAt": "2026-05-04T10:17:40.894Z",
+      "meetingId": 1,
+      "userId": 1,
+      "groupId": null,
+      "fullName": "Demo Teacher One",
+      "firstJoinedAt": "2026-05-04T10:16:27.203Z",
+      "lastLeftAt": "2026-05-04T10:17:40.890Z"
+    },
+    {
+      "id": 3,
+      "totalSeconds": 255,
+      "isPresent": true,
+      "syncedToMainBackend": true,
+      "createdAt": "2026-05-04T10:17:44.437Z",
+      "updatedAt": "2026-05-04T10:27:06.742Z",
+      "meetingId": 1,
+      "userId": 1011,
+      "groupId": 101,
+      "fullName": "Ali Talaba",
+      "firstJoinedAt": "2026-05-04T10:17:44.436Z",
+      "lastLeftAt": "2026-05-04T10:27:06.739Z"
+    },
+    {
+      "id": 4,
+      "totalSeconds": 45,
+      "isPresent": true,
+      "syncedToMainBackend": true,
+      "createdAt": "2026-05-04T10:17:47.622Z",
+      "updatedAt": "2026-05-04T10:27:13.543Z",
+      "meetingId": 1,
+      "userId": 3,
+      "groupId": null,
+      "fullName": "Demo Admin",
+      "firstJoinedAt": "2026-05-04T10:17:47.622Z",
+      "lastLeftAt": "2026-05-04T10:27:13.542Z"
+    },
+    {
+      "id": 5,
+      "totalSeconds": 0,
+      "isPresent": true,
+      "syncedToMainBackend": false,
+      "createdAt": "2026-05-04T10:20:44.638Z",
+      "updatedAt": "2026-05-04T10:20:44.638Z",
+      "meetingId": 1,
+      "userId": 1012,
+      "groupId": 101,
+      "fullName": "Vali Talaba",
+      "firstJoinedAt": "2026-05-04T10:20:44.637Z"
+    }
+  ],
+  "chatMessages": [
+    {
+      "id": 1,
+      "createdAt": "2026-05-04T10:17:57.347Z",
+      "meetingId": 1,
+      "userId": 1011,
+      "fullName": "Ali Talaba",
+      "message": "asfa"
+    },
+    {
+      "id": 2,
+      "createdAt": "2026-05-04T10:26:39.314Z",
+      "meetingId": 1,
+      "userId": 3,
+      "fullName": "Demo Admin",
+      "message": "zxbdfn"
+    },
+    {
+      "id": 3,
+      "createdAt": "2026-05-04T10:26:41.857Z",
+      "meetingId": 1,
+      "userId": 3,
+      "fullName": "Demo Admin",
+      "message": "sdsb"
+    },
+    {
+      "id": 4,
+      "createdAt": "2026-05-04T10:26:44.128Z",
+      "meetingId": 1,
+      "userId": 3,
+      "fullName": "Demo Admin",
+      "message": "sddsg"
+    },
+    {
+      "id": 5,
+      "createdAt": "2026-05-04T10:26:46.004Z",
+      "meetingId": 1,
+      "userId": 3,
+      "fullName": "Demo Admin",
+      "message": "sdgsgsd"
+    },
+    {
+      "id": 6,
+      "createdAt": "2026-05-04T10:26:47.916Z",
+      "meetingId": 1,
+      "userId": 3,
+      "fullName": "Demo Admin",
+      "message": "sdgsdgsd"
+    },
+    {
+      "id": 7,
+      "createdAt": "2026-05-04T10:26:50.030Z",
+      "meetingId": 1,
+      "userId": 1011,
+      "fullName": "Ali Talaba",
+      "message": "sdgdsg"
+    },
+    {
+      "id": 8,
+      "createdAt": "2026-05-04T10:26:52.128Z",
+      "meetingId": 1,
+      "userId": 1011,
+      "fullName": "Ali Talaba",
+      "message": "sdgsdg"
+    },
+    {
+      "id": 9,
+      "createdAt": "2026-05-04T10:26:55.051Z",
+      "meetingId": 1,
+      "userId": 1011,
+      "fullName": "Ali Talaba",
+      "message": "sdgdsg"
+    },
+    {
+      "id": 10,
+      "createdAt": "2026-05-04T10:26:57.500Z",
+      "meetingId": 1,
+      "userId": 1011,
+      "fullName": "Ali Talaba",
+      "message": "dsgsdg"
+    },
+    {
+      "id": 11,
+      "createdAt": "2026-05-04T10:27:00.496Z",
+      "meetingId": 1,
+      "userId": 1011,
+      "fullName": "Ali Talaba",
+      "message": "132435"
+    }
+  ],
+  "attendanceSyncQueue": []
+}

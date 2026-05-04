@@ -1,0 +1,6 @@
+[2026-05-04T10:05:21.971Z] [INFO] Meeting backend is running on port 4101. {"storageMode":"file-store"}
+[2026-05-04T10:05:49.011Z] [INFO] Mock main backend received event: meeting.started {"meetingId":3,"startedByUserId":3,"startedAt":"2026-05-04T10:05:49.011Z"}
+[2026-05-04T10:05:49.067Z] [INFO] mediasoup worker created.
+[2026-05-04T10:05:49.073Z] [INFO] Mock main backend received event: participant.joined {"meetingId":3,"userId":1011,"role":"student","joinedAt":"2026-05-04T10:05:49.073Z"}
+[2026-05-04T10:05:49.092Z] [INFO] Attendance sync accepted by mock main backend. {"attendanceId":2,"meetingId":3,"userId":1011,"groupId":101,"fullName":"Ali Talaba","firstJoinedAt":"2026-05-04T10:05:49.071Z","lastLeftAt":"2026-05-04T10:05:49.092Z","totalSeconds":1,"totalMinutes":1,"isPresent":true}
+[2026-05-04T10:05:49.097Z] [INFO] Mock main backend received event: participant.left {"meetingId":3,"userId":1011,"role":"student","leftAt":"2026-05-04T10:05:49.097Z"}
